@@ -55,7 +55,13 @@ public class Main {
                 .addAction("/", (req, res) -> {
                     JsonObject jsonObject = gson.fromJson(req.getBody(), JsonObject.class);
                     JsonObject item = jsonObject.get("Item").getAsJsonObject();
-                    ThreadUtil.execute(() -> pinyin(item));
+                    try {
+                        if (Objects.nonNull(item)) {
+                            ThreadUtil.execute(() -> pinyin(item));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     res.sendOk();
                 }).start();
 
