@@ -127,12 +127,7 @@ public class Main {
                 });
         HttpRequest.post(host + "/Items/" + id + "?api_key=" + key)
                 .body(gson.toJson(jsonObject))
-                .then(res -> {
-                    if (res.isOk()) {
-                        System.out.println(jsonObject);
-                    }
-                });
-
+                .execute();
     }
 
     public static JsonArray getItems(String ItemId) {
