@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.cron.CronUtil;
 import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
@@ -16,13 +17,14 @@ import com.google.gson.JsonObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Main {
+public class Main implements Runnable {
     public static final Gson gson = new Gson();
     public static String adminUserId = "";
     public static String host = "http://192.168.5.4:8096";
     public static String key = "c30e784137134792b2907b78f5c23b60";
     public static String itemStr = "";
     public static Integer port = 9198;
+    public static String cron = "";
 
     public static final Log log = Log.get(Main.class);
 
@@ -52,6 +54,9 @@ public class Main {
             if (List.of("-p", "--port", "PORT").contains(k)) {
                 port = Integer.parseInt(v);
             }
+            if (List.of("-c", "--cron", "CRON").contains(k)) {
+                cron = v;
+            }
         }
 
         HttpUtil.createServer(port)
@@ -70,6 +75,18 @@ public class Main {
                     res.sendOk();
                 }).start();
 
+        Main main = new Main();
+        main.run();
+
+        if (StrUtil.isNotBlank(cron)) {
+            CronUtil.schedule(cron, main);
+            CronUtil.start();
+        }
+
+    }
+
+    @Override
+    public void run() {
         JsonObject adminUser = HttpRequest.get(host + "/Users?api_key=" + key)
                 .thenFunction(res -> {
                     JsonArray jsonElements = gson.fromJson(res.body(), JsonArray.class);
