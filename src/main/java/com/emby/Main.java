@@ -59,9 +59,10 @@ public class Main {
                     log.info("Webhooks = {}", req.getBody());
                     try {
                         JsonObject jsonObject = gson.fromJson(req.getBody(), JsonObject.class);
-                        JsonObject item = jsonObject.get("Item").getAsJsonObject();
+                        JsonElement item = jsonObject.get("Item");
                         if (Objects.nonNull(item)) {
-                            ThreadUtil.execute(() -> pinyin(item));
+                            JsonObject itemAsJsonObject = item.getAsJsonObject();
+                            ThreadUtil.execute(() -> pinyin(itemAsJsonObject));
                         }
                     } catch (Exception e) {
                         log.error(e);
