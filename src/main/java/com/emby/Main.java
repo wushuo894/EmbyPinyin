@@ -7,6 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.log.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -22,6 +23,8 @@ public class Main {
     public static String key = "c30e784137134792b2907b78f5c23b60";
     public static String itemStr = "";
     public static Integer port = 9198;
+
+    public static final Log log = Log.get(Main.class);
 
     public static void main(String[] args) {
         HashMap<String, String> map = new HashMap<>();
@@ -53,14 +56,15 @@ public class Main {
 
         HttpUtil.createServer(port)
                 .addAction("/", (req, res) -> {
-                    JsonObject jsonObject = gson.fromJson(req.getBody(), JsonObject.class);
-                    JsonObject item = jsonObject.get("Item").getAsJsonObject();
+                    log.info("Webhooks = {}", req.getBody());
                     try {
+                        JsonObject jsonObject = gson.fromJson(req.getBody(), JsonObject.class);
+                        JsonObject item = jsonObject.get("Item").getAsJsonObject();
                         if (Objects.nonNull(item)) {
                             ThreadUtil.execute(() -> pinyin(item));
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error(e);
                     }
                     res.sendOk();
                 }).start();
