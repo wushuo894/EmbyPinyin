@@ -1,6 +1,6 @@
 # EmbyPinyin
 
-Emby 电影、电视剧支持排序
+Emby 支持拼音首字母排序
 
 ### Docker部署
 
