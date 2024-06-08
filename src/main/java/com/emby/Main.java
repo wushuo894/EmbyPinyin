@@ -24,7 +24,6 @@ public class Main implements Runnable {
     public static String key = "c30e784137134792b2907b78f5c23b60";
     public static String itemStr = "";
     public static Integer port = 9198;
-    public static String cron = "";
 
     public static final Log log = Log.get(Main.class);
 
@@ -40,6 +39,8 @@ public class Main implements Runnable {
         map.putAll(envMap);
 
         boolean run = Boolean.TRUE;
+
+        String cron = "";
 
         for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
             String k = stringStringEntry.getKey();
@@ -97,7 +98,7 @@ public class Main implements Runnable {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         JsonObject adminUser = HttpRequest.get(host + "/Users?api_key=" + key)
                 .thenFunction(res -> {
                     JsonArray jsonElements = gson.fromJson(res.body(), JsonArray.class);
