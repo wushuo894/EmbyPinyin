@@ -39,7 +39,7 @@ public class Main implements Runnable {
         map.putAll(argsMap);
         map.putAll(envMap);
 
-        Boolean run = Boolean.TRUE;
+        boolean run = Boolean.TRUE;
 
         for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
             String k = stringStringEntry.getKey();
