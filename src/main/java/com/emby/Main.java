@@ -39,6 +39,8 @@ public class Main implements Runnable {
         map.putAll(argsMap);
         map.putAll(envMap);
 
+        Boolean run = Boolean.TRUE;
+
         for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
             String k = stringStringEntry.getKey();
             String v = stringStringEntry.getValue();
@@ -56,6 +58,9 @@ public class Main implements Runnable {
             }
             if (List.of("-c", "--cron", "CRON").contains(k)) {
                 cron = v;
+            }
+            if (List.of("-r", "--run", "RUN").contains(k)) {
+                run = Boolean.parseBoolean(v);
             }
         }
 
@@ -76,7 +81,13 @@ public class Main implements Runnable {
                 }).start();
 
         Main main = new Main();
-        main.run();
+        try {
+            if (run) {
+                ThreadUtil.execute(main);
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
 
         if (StrUtil.isNotBlank(cron)) {
             CronUtil.schedule(cron, main);
