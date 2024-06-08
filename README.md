@@ -16,3 +16,13 @@ Emby 电影、电视剧支持排序
 -e TZ=Asia/Shanghai \
 --restart always \
 wushuo894/emby-pinyin`
+
+| 参数   | 作用          | 默认值                   |
+|------|-------------|-----------------------|
+| PORT | 端口号         | 9877                  |
+| HOST | emby 地址     | http://127.0.0.1:3000 |
+| KEY  | API Key     | 空                     |
+| ITEM | 媒体库(可以用,分割) | 电影,番剧                 |
+| RUN  | 启动时运行       | TRUE                  |
+| CRON | 计划任务        | 0 1 * * *             |
+| TZ   | 时区          | Asia/Shanghai         |
