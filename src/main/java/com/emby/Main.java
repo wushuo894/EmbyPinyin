@@ -9,10 +9,7 @@ import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.log.Log;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -174,9 +171,16 @@ public class Main implements Runnable {
         return HttpRequest.get(host + "/Users/" + adminUserId + "/Items?api_key=" + key)
                 .form("ParentId", ItemId)
                 .thenFunction(res -> {
-                    JsonObject jsonObject = gson.fromJson(res.body(), JsonObject.class);
-                    JsonArray items = jsonObject.get("Items").getAsJsonArray();
                     JsonArray retItems = new JsonArray();
+                    JsonObject jsonObject;
+                    try {
+                        jsonObject = gson.fromJson(res.body(), JsonObject.class);
+                    } catch (Exception e) {
+                        log.error("JSON 序列化异常");
+                        log.error(e);
+                        return retItems;
+                    }
+                    JsonArray items = jsonObject.get("Items").getAsJsonArray();
                     for (JsonElement item : items) {
                         JsonObject itemAsJsonObject = item.getAsJsonObject();
                         String id = itemAsJsonObject.get("Id").getAsString();
