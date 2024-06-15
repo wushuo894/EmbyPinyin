@@ -7,6 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.log.Log;
 import com.google.gson.*;
@@ -96,24 +97,9 @@ public class Main implements Runnable {
 
     @Override
     public synchronized void run() {
-        JsonObject adminUser = HttpRequest.get(host + "/Users?api_key=" + key)
-                .thenFunction(res -> {
-                    JsonArray jsonElements = gson.fromJson(res.body(), JsonArray.class);
-                    for (JsonElement jsonElement : jsonElements) {
-                        JsonObject user = jsonElement.getAsJsonObject();
-                        JsonObject policy = user.get("Policy").getAsJsonObject();
-                        boolean isAdministrator = policy.get("IsAdministrator").getAsBoolean();
-                        if (!isAdministrator) {
-                            continue;
-                        }
-                        return user;
-                    }
-                    return null;
-                });
-        Assert.notNull(adminUser, "未找到管理员账户，请检查你的API KEY参数");
+        getAdmin();
 
-        adminUserId = adminUser.get("Id").getAsString();
-
+        // 获取媒体库列表
         JsonArray items = HttpRequest.get(host + "/Users/" + adminUserId + "/Views?api_key=" + key)
                 .thenFunction(res -> {
                     JsonObject body = gson.fromJson(res.body(), JsonObject.class);
@@ -134,10 +120,12 @@ public class Main implements Runnable {
             items.add(item);
         }
 
+        // 遍历媒体库
         for (JsonElement item : items) {
             JsonObject itemAsJsonObject = item.getAsJsonObject();
             String itemId = itemAsJsonObject.get("Id").getAsString();
             String name = itemAsJsonObject.get("Name").getAsString();
+            // 匹配媒体库名称 - 则全匹配
             if (StrUtil.isNotBlank(itemStr) && !itemStr.equals("-")) {
                 if (!Arrays.asList(itemStr.split(",")).contains(name)) {
                     continue;
@@ -149,6 +137,34 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * 获取管理员账户
+     */
+    private static void getAdmin() {
+        JsonObject adminUser = HttpRequest.get(host + "/Users?api_key=" + key)
+                .thenFunction(res -> {
+                    JsonArray jsonElements = gson.fromJson(res.body(), JsonArray.class);
+                    for (JsonElement jsonElement : jsonElements) {
+                        JsonObject user = jsonElement.getAsJsonObject();
+                        JsonObject policy = user.get("Policy").getAsJsonObject();
+                        boolean isAdministrator = policy.get("IsAdministrator").getAsBoolean();
+                        if (!isAdministrator) {
+                            continue;
+                        }
+                        return user;
+                    }
+                    return null;
+                });
+        Assert.notNull(adminUser, "未找到管理员账户，请检查你的API KEY参数");
+
+        adminUserId = adminUser.get("Id").getAsString();
+    }
+
+    /**
+     * 拼音排序
+     *
+     * @param itemAsJsonObject
+     */
     public static void pinyin(JsonObject itemAsJsonObject) {
         String id = itemAsJsonObject.get("Id").getAsString();
         JsonObject jsonObject = HttpRequest.get(host + "/Users/" + adminUserId + "/Items/" + id + "?api_key=" + key)
@@ -164,9 +180,15 @@ public class Main implements Runnable {
                 });
         HttpRequest.post(host + "/Items/" + id + "?api_key=" + key)
                 .body(gson.toJson(jsonObject))
-                .execute();
+                .thenFunction(HttpResponse::isOk);
     }
 
+    /**
+     * 递归获取所有视频
+     *
+     * @param ItemId
+     * @return
+     */
     public static JsonArray getItems(String ItemId) {
         return HttpRequest.get(host + "/Users/" + adminUserId + "/Items?api_key=" + key)
                 .form("ParentId", ItemId)
