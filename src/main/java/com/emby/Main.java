@@ -6,6 +6,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.extra.pinyin.PinyinUtil;
+import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
@@ -169,7 +170,14 @@ public class Main implements Runnable {
         String id = itemAsJsonObject.get("Id").getAsString();
         JsonObject jsonObject = HttpRequest.get(host + "/Users/" + adminUserId + "/Items/" + id + "?api_key=" + key)
                 .thenFunction(res -> {
-                    JsonObject body = gson.fromJson(res.body(), JsonObject.class);
+                    JsonObject body;
+                    try {
+                        body = gson.fromJson(res.body(), JsonObject.class);
+                    } catch (Exception e) {
+                        log.error("JSON解析失败 === > {}", res.body());
+                        log.error(e);
+                        throw new RuntimeException("JSON解析失败");
+                    }
                     String name = body.get("Name").getAsString();
                     String pinyin = PinyinUtil.getPinyin(name);
                     body.addProperty("SortName", pinyin);
