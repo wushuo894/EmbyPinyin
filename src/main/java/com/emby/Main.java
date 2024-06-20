@@ -172,7 +172,8 @@ public class Main implements Runnable {
         JsonObject jsonObject = HttpRequest.get(host + "/Users/" + adminUserId + "/Items/" + id + "?api_key=" + key)
                 .thenFunction(res -> {
                     if (!JSONUtil.isTypeJSON(res.body())) {
-                        throw new RuntimeException(res.body());
+                        log.error(res.body());
+                        return null;
                     }
                     JsonObject body;
                     try {
@@ -190,6 +191,9 @@ public class Main implements Runnable {
                     lockedFields.add("SortName");
                     return body;
                 });
+        if (Objects.isNull(jsonObject)) {
+            return;
+        }
         HttpRequest.post(host + "/Items/" + id + "?api_key=" + key)
                 .body(gson.toJson(jsonObject))
                 .thenFunction(HttpResponse::isOk);
