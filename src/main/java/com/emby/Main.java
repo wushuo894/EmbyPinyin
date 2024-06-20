@@ -10,6 +10,7 @@ import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import com.google.gson.*;
 
@@ -170,6 +171,9 @@ public class Main implements Runnable {
         String id = itemAsJsonObject.get("Id").getAsString();
         JsonObject jsonObject = HttpRequest.get(host + "/Users/" + adminUserId + "/Items/" + id + "?api_key=" + key)
                 .thenFunction(res -> {
+                    if (!JSONUtil.isTypeJSON(res.body())) {
+                        throw new RuntimeException(res.body());
+                    }
                     JsonObject body;
                     try {
                         body = gson.fromJson(res.body(), JsonObject.class);
