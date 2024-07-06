@@ -2,7 +2,7 @@
 
 Emby 支持拼音首字母排序
 
-### Docker部署
+## Docker部署
 
 `docker run -d \
 --name emby-pinyin \
@@ -26,3 +26,13 @@ wushuo894/emby-pinyin`
 | RUN  | 启动时运行       | TRUE                  |
 | CRON | 计划任务        | 0 1 * * *             |
 | TZ   | 时区          | Asia/Shanghai         |
+
+## 设置 Webhooks
+
+| 参数     | 设置               |
+|--------|------------------|
+| URL    | http://ip:端口     |
+| 请求类型   | application/json |
+| Events | 媒体库/新媒体已添加       |
+
+![https://github.com/wushuo894/EmbyPinyin/raw/master/images/webhooks.png](images/webhooks.png)
