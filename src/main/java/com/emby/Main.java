@@ -71,6 +71,13 @@ public class Main implements Runnable {
                     try {
                         JsonObject jsonObject = gson.fromJson(req.getBody(), JsonObject.class);
                         JsonElement item = jsonObject.get("Item");
+                        JsonElement event = jsonObject.get("Event");
+                        if (event.isJsonNull()) {
+                            return;
+                        }
+                        if (!event.getAsString().equals("library.new")) {
+                            return;
+                        }
                         if (Objects.nonNull(item)) {
                             JsonObject itemAsJsonObject = item.getAsJsonObject();
                             ThreadUtil.execute(() -> pinyin(itemAsJsonObject));
@@ -169,6 +176,10 @@ public class Main implements Runnable {
      */
     public static void pinyin(JsonObject itemAsJsonObject) {
         String id = itemAsJsonObject.get("Id").getAsString();
+        JsonElement seriesName = itemAsJsonObject.get("SeriesName");
+        if (!seriesName.isJsonNull()) {
+            id = itemAsJsonObject.get("SeriesId").getAsString();
+        }
         JsonObject jsonObject = HttpRequest.get(host + "/Users/" + adminUserId + "/Items/" + id + "?api_key=" + key)
                 .thenFunction(res -> {
                     if (!JSONUtil.isTypeJSON(res.body())) {
@@ -194,9 +205,14 @@ public class Main implements Runnable {
         if (Objects.isNull(jsonObject)) {
             return;
         }
-        HttpRequest.post(host + "/Items/" + id + "?api_key=" + key)
+        Boolean b = HttpRequest.post(host + "/Items/" + id + "?api_key=" + key)
                 .body(gson.toJson(jsonObject))
                 .thenFunction(HttpResponse::isOk);
+        if (b) {
+            log.info("done");
+            return;
+        }
+        log.error("error");
     }
 
     /**
