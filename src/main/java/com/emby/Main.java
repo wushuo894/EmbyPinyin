@@ -176,9 +176,9 @@ public class Main implements Runnable {
      */
     public static void pinyin(JsonObject itemAsJsonObject) {
         String id = itemAsJsonObject.get("Id").getAsString();
-        JsonElement seriesId = itemAsJsonObject.get("SeriesId");
-        if (Objects.nonNull(seriesId)) {
-            id = seriesId.getAsString();
+        JsonElement seriesName = itemAsJsonObject.get("SeriesName");
+        if (Objects.nonNull(seriesName)) {
+            id = itemAsJsonObject.get("SeriesId").getAsString();
         }
         JsonObject jsonObject = HttpRequest.get(host + "/Users/" + adminUserId + "/Items/" + id + "?api_key=" + key)
                 .thenFunction(res -> {
