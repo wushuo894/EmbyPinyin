@@ -167,6 +167,7 @@ public class Main implements Runnable {
         Assert.notNull(adminUser, "未找到管理员账户，请检查你的API KEY参数");
 
         adminUserId = adminUser.get("Id").getAsString();
+        log.info("adminUserId => {}", adminUserId);
     }
 
     /**
