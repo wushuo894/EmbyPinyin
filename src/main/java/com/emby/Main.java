@@ -88,6 +88,9 @@ public class Main implements Runnable {
                     res.sendOk();
                 }).start();
 
+
+        getAdmin();
+
         Main main = new Main();
         try {
             if (run) {
@@ -106,8 +109,6 @@ public class Main implements Runnable {
 
     @Override
     public synchronized void run() {
-        getAdmin();
-
         // 获取媒体库列表
         JsonArray items = HttpRequest.get(host + "/Users/" + adminUserId + "/Views?api_key=" + key)
                 .thenFunction(res -> {
@@ -150,6 +151,9 @@ public class Main implements Runnable {
      * 获取管理员账户
      */
     private static void getAdmin() {
+        if (StrUtil.isNotBlank(adminUserId)) {
+            return;
+        }
         JsonObject adminUser = HttpRequest.get(host + "/Users?api_key=" + key)
                 .thenFunction(res -> {
                     JsonArray jsonElements = gson.fromJson(res.body(), JsonArray.class);
