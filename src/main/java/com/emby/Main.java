@@ -81,7 +81,11 @@ public class Main implements Runnable {
                         }
                         if (Objects.nonNull(item)) {
                             JsonObject itemAsJsonObject = item.getAsJsonObject();
-                            ThreadUtil.execute(() -> pinyin(itemAsJsonObject));
+                            ThreadUtil.execute(() -> {
+                                if (pinyin(itemAsJsonObject)) {
+                                    log.info("done");
+                                }
+                            });
                         }
                     } catch (Exception e) {
                         log.error(e);
@@ -155,20 +159,25 @@ public class Main implements Runnable {
         if (StrUtil.isNotBlank(adminUserId)) {
             return;
         }
-        JsonObject adminUser = HttpRequest.get(host + "/Users?api_key=" + key)
-                .thenFunction(res -> {
-                    JsonArray jsonElements = gson.fromJson(res.body(), JsonArray.class);
-                    for (JsonElement jsonElement : jsonElements) {
-                        JsonObject user = jsonElement.getAsJsonObject();
-                        JsonObject policy = user.get("Policy").getAsJsonObject();
-                        boolean isAdministrator = policy.get("IsAdministrator").getAsBoolean();
-                        if (!isAdministrator) {
-                            continue;
+        JsonObject adminUser;
+        try {
+            adminUser = HttpRequest.get(host + "/Users?api_key=" + key)
+                    .thenFunction(res -> {
+                        JsonArray jsonElements = gson.fromJson(res.body(), JsonArray.class);
+                        for (JsonElement jsonElement : jsonElements) {
+                            JsonObject user = jsonElement.getAsJsonObject();
+                            JsonObject policy = user.get("Policy").getAsJsonObject();
+                            boolean isAdministrator = policy.get("IsAdministrator").getAsBoolean();
+                            if (!isAdministrator) {
+                                continue;
+                            }
+                            return user;
                         }
-                        return user;
-                    }
-                    return null;
-                });
+                        return null;
+                    });
+        } catch (Exception e) {
+            throw new RuntimeException("网络异常");
+        }
         Assert.notNull(adminUser, "未找到管理员账户，请检查你的API KEY参数");
 
         adminUserId = adminUser.get("Id").getAsString();
@@ -180,7 +189,7 @@ public class Main implements Runnable {
      *
      * @param itemAsJsonObject
      */
-    public static void pinyin(JsonObject itemAsJsonObject) {
+    public static Boolean pinyin(JsonObject itemAsJsonObject) {
         String id = itemAsJsonObject.get("Id").getAsString();
         JsonElement seriesName = itemAsJsonObject.get("SeriesName");
         if (Objects.nonNull(seriesName)) {
@@ -209,16 +218,11 @@ public class Main implements Runnable {
                     return body;
                 });
         if (Objects.isNull(jsonObject)) {
-            return;
+            return false;
         }
-        Boolean b = HttpRequest.post(host + "/Items/" + id + "?api_key=" + key)
+        return HttpRequest.post(host + "/Items/" + id + "?api_key=" + key)
                 .body(gson.toJson(jsonObject))
                 .thenFunction(HttpResponse::isOk);
-        if (b) {
-            log.info("done");
-            return;
-        }
-        log.error("error");
     }
 
     /**
