@@ -69,6 +69,7 @@ public class Main implements Runnable {
                 .addAction("/", (req, res) -> {
                     log.info("Webhooks = {}", req.getBody());
                     try {
+                        getAdmin();
                         JsonObject jsonObject = gson.fromJson(req.getBody(), JsonObject.class);
                         JsonElement item = jsonObject.get("Item");
                         JsonElement event = jsonObject.get("Event");
