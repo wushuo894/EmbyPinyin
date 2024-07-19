@@ -84,6 +84,8 @@ public class Main implements Runnable {
                             ThreadUtil.execute(() -> {
                                 if (pinyin(itemAsJsonObject)) {
                                     log.info("done");
+                                } else {
+                                    log.error("error");
                                 }
                             });
                         }
