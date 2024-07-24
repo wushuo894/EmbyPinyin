@@ -161,9 +161,8 @@ public class Main implements Runnable {
         if (StrUtil.isNotBlank(adminUserId)) {
             return;
         }
-        JsonObject adminUser;
         try {
-            adminUser = HttpRequest.get(host + "/Users?api_key=" + key)
+            JsonObject adminUser = HttpRequest.get(host + "/Users?api_key=" + key)
                     .thenFunction(res -> {
                         JsonArray jsonElements = gson.fromJson(res.body(), JsonArray.class);
                         for (JsonElement jsonElement : jsonElements) {
@@ -177,13 +176,15 @@ public class Main implements Runnable {
                         }
                         return null;
                     });
+            if (Objects.isNull(adminUser)) {
+                log.error("未找到管理员账户，请检查你的API KEY参数");
+                return;
+            }
+            adminUserId = adminUser.get("Id").getAsString();
+            log.info("adminUserId => {}", adminUserId);
         } catch (Exception e) {
             throw new RuntimeException("网络异常");
         }
-        Assert.notNull(adminUser, "未找到管理员账户，请检查你的API KEY参数");
-
-        adminUserId = adminUser.get("Id").getAsString();
-        log.info("adminUserId => {}", adminUserId);
     }
 
     /**
