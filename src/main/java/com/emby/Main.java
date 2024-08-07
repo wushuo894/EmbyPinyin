@@ -15,6 +15,7 @@ import cn.hutool.log.Log;
 import com.google.gson.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Main implements Runnable {
@@ -101,7 +102,11 @@ public class Main implements Runnable {
         Main main = new Main();
         try {
             if (run) {
-                ThreadUtil.execute(main);
+                ThreadUtil.execute(() -> {
+                    // 一分钟后再执行 防止开机自启顺序错误
+                    ThreadUtil.sleep(1, TimeUnit.MINUTES);
+                    main.run();
+                });
             }
         } catch (Exception e) {
             log.error(e);
