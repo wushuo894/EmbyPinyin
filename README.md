@@ -29,4 +29,4 @@ Emby 支持拼音首字母排序
 | 请求类型   | application/json |
 | Events | 媒体库/新媒体已添加       |
 
-![https://github.com/wushuo894/EmbyPinyin/raw/master/images/webhooks.png](images/webhooks.png)
+![https://raw.githubusercontent.com/wushuo894/EmbyPinyin/master/images/webhooks.png](https://raw.githubusercontent.com/wushuo894/EmbyPinyin/master/images/webhooks.png)
