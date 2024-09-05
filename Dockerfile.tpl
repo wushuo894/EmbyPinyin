@@ -8,5 +8,6 @@ ENV ITEM="电影,番剧"
 ENV CRON="0 1 * * *"
 ENV RUN="TRUE"
 ENV TZ="Asia/Shanghai"
+RUN ln -s /opt/java/openjdk /usr/local/openjdk-17
 EXPOSE 9198
-CMD ["/opt/java/openjdk/bin/java", "-jar", "EmbyPinyin-jar-with-dependencies.jar"]
+CMD ["java", "-jar", "EmbyPinyin-jar-with-dependencies.jar"]
