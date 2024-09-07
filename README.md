@@ -30,3 +30,9 @@ Emby 支持拼音首字母排序
 | Events | 媒体库/新媒体已添加       |
 
 ![https://raw.githubusercontent.com/wushuo894/EmbyPinyin/master/images/webhooks.png](https://raw.githubusercontent.com/wushuo894/EmbyPinyin/master/images/webhooks.png)
+
+
+    在已有元数据的情况下手动刷新元数据的话 emby 不会进行 Webhooks 通知
+    这是 emby 导致的
+    解决办法是手动重启容器让所有元数据排序刷新，或者等定时任务
+
