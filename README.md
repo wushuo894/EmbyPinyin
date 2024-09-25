@@ -26,11 +26,11 @@ Emby 支持拼音首字母排序
 
 ## 设置 Webhooks
 
-| 参数     | 设置               |
-|--------|------------------|
-| URL    | http://ip:端口     |
-| 请求类型   | application/json |
-| Events | 媒体库/新媒体已添加       |
+| 参数     | 设置                        |
+|--------|---------------------------|
+| URL    | http://ip:端口/api/web_hook |
+| 请求类型   | application/json          |
+| Events | 媒体库/新媒体已添加                |
 
 ![https://raw.githubusercontent.com/wushuo894/EmbyPinyin/master/images/webhooks.png](https://raw.githubusercontent.com/wushuo894/EmbyPinyin/master/images/webhooks.png)
 
