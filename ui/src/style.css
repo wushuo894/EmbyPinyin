@@ -1,0 +1,35 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+body, html, #app {
+    height: 100%;
+    width: 100%;
+}
+
+#app{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+@media (max-width: 450px) {
+    .el-dialog {
+        --el-dialog-width: 100%;
+    }
+}
+
+@media (min-width: 451px) {
+    .el-dialog {
+        --el-dialog-width: 80%;
+    }
+}
+
+@media (min-width: 900px) {
+    .el-dialog {
+        --el-dialog-width: 800px;
+    }
+}
