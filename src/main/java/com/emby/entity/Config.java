@@ -13,5 +13,6 @@ public class Config {
     private Boolean debug;
     private Boolean cron;
     private String cronStr;
+    private Boolean isInnerIP;
     private List<String> cronIds;
 }

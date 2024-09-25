@@ -12,6 +12,9 @@ public class Main {
             ServerUtil
                     .create(args)
                     .start();
+
+            Runtime.getRuntime()
+                    .addShutdownHook(new Thread(ServerUtil::stop));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

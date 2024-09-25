@@ -1,6 +1,7 @@
 package com.emby.util;
 
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.net.Ipv4Util;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.http.HttpUtil;
@@ -11,7 +12,9 @@ import cn.hutool.log.Log;
 import com.emby.action.BaseAction;
 import com.emby.action.RootAction;
 import com.emby.annotation.Path;
+import com.emby.entity.Config;
 import com.emby.entity.Result;
+import com.sun.net.httpserver.HttpExchange;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -55,6 +58,14 @@ public class ServerUtil {
                     try {
                         REQUEST.set(req);
                         RESPONSE.set(res);
+                        Config config = ConfigUtil.CONFIG;
+                        Boolean isInnerIP = config.getIsInnerIP();
+                        String ip = getIp();
+                        if (isInnerIP && !Ipv4Util.isInnerIP(ip)) {
+                            res.send404("404 Not Found");
+                            return;
+                        }
+
                         BaseAction baseAction = (BaseAction) action;
                         baseAction.doAction(req, res);
                     } catch (Exception e) {
@@ -73,6 +84,18 @@ public class ServerUtil {
             });
         }
         return server;
+    }
+
+    public static String getIp() {
+        try {
+            HttpServerRequest request = ServerUtil.REQUEST.get();
+            HttpExchange httpExchange = (HttpExchange) ReflectUtil.getFieldValue(request, "httpExchange");
+            return httpExchange.getRemoteAddress().getAddress().getHostAddress();
+        } catch (Exception e) {
+            String message = ExceptionUtil.getMessage(e);
+            log.error(message, e);
+        }
+        return "未知";
     }
 
     public static void stop() {

@@ -1,6 +1,9 @@
 package com.emby.action;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.text.StrFormatter;
+import cn.hutool.core.util.ReUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.server.HttpServerRequest;
 import cn.hutool.http.server.HttpServerResponse;
 import com.emby.annotation.Path;
@@ -21,10 +24,21 @@ public class ConfigAction implements BaseAction {
             return;
         }
         if (!method.equals("POST")) {
-            resultError();
+            res.send404("404 Not Found");
             return;
         }
         Config config = getBody(Config.class);
+        String host = config.getHost();
+        if (StrUtil.isNotBlank(host)) {
+            if (!ReUtil.contains("^http(s)?://", host)) {
+                host = StrFormatter.format("http://{}", host);
+            }
+            if (host.endsWith("/")) {
+                host = host.substring(0, host.length() - 1);
+            }
+        }
+        config.setHost(host);
+
         BeanUtil.copyProperties(config, ConfigUtil.CONFIG);
         ConfigUtil.sync();
         ConfigUtil.load();

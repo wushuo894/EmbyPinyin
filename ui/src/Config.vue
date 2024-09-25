@@ -12,6 +12,9 @@
         <el-switch v-model:model-value="config.cron"/>
         <el-input v-model:model-value="config.cronStr" placeholder="0 1 * * *" :disabled="!config.cron"/>
       </el-form-item>
+      <el-form-item label="禁止公网访问">
+        <el-switch v-model:model-value="config.isInnerIP"/>
+      </el-form-item>
       <el-form-item label="Debug">
         <el-switch v-model:model-value="config.debug"/>
       </el-form-item>
@@ -35,7 +38,8 @@ const config = ref({
   'key': '',
   'debug': false,
   'cron': false,
-  'cronStr': ''
+  'cronStr': '',
+  'isInnerIP': false
 })
 
 let show = () => {

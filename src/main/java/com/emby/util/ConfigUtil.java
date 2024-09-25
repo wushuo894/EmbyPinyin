@@ -30,6 +30,7 @@ public class ConfigUtil {
                 .setDebug(false)
                 .setCron(false)
                 .setCronStr("0 1 * * *")
+                .setIsInnerIP(false)
                 .setCronIds(new ArrayList<>());
     }
 
