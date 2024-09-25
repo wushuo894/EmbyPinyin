@@ -42,7 +42,7 @@ jobs:
         files: |
           ./target/emby-pinyin-jar-with-dependencies.jar
           ./target/emby-pinyin-launcher.exe
-          ./target/emby-pinyin.win.x86_64.zip
+          ./emby-pinyin.win.x86_64.zip
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
