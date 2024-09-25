@@ -1,6 +1,7 @@
 package com.emby.util;
 
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.lang.PatternPool;
 import cn.hutool.core.net.Ipv4Util;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -8,15 +9,18 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.http.server.HttpServerRequest;
 import cn.hutool.http.server.HttpServerResponse;
 import cn.hutool.http.server.SimpleServer;
+import cn.hutool.http.server.filter.HttpFilter;
 import cn.hutool.log.Log;
 import com.emby.action.BaseAction;
 import com.emby.action.RootAction;
 import com.emby.annotation.Path;
 import com.emby.entity.Config;
 import com.emby.entity.Result;
+import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -50,6 +54,25 @@ public class ServerUtil {
             }
             Object action = ReflectUtil.newInstanceIfPossible(aClass);
             String urlPath = "/api" + path.value();
+            server.addFilter(new HttpFilter() {
+                @Override
+                public void doFilter(HttpServerRequest req, HttpServerResponse res, Filter.Chain chain) throws IOException {
+                    Config config = ConfigUtil.CONFIG;
+                    Boolean isInnerIP = config.getIsInnerIP();
+                    String ip = getIp();
+                    if (isInnerIP) {
+                        if (!PatternPool.IPV4.matcher(ip).matches()) {
+                            res.send404("404 Not Found");
+                            return;
+                        }
+                        if (Ipv4Util.isInnerIP(ip)) {
+                            res.send404("404 Not Found");
+                            return;
+                        }
+                    }
+                    chain.doFilter(req.getHttpExchange());
+                }
+            });
             server.addAction(urlPath, new BaseAction() {
                 private final Log log = Log.get(aClass);
 
@@ -58,14 +81,6 @@ public class ServerUtil {
                     try {
                         REQUEST.set(req);
                         RESPONSE.set(res);
-                        Config config = ConfigUtil.CONFIG;
-                        Boolean isInnerIP = config.getIsInnerIP();
-                        String ip = getIp();
-                        if (isInnerIP && !Ipv4Util.isInnerIP(ip)) {
-                            res.send404("404 Not Found");
-                            return;
-                        }
-
                         BaseAction baseAction = (BaseAction) action;
                         baseAction.doAction(req, res);
                     } catch (Exception e) {
