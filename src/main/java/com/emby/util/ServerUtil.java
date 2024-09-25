@@ -9,18 +9,15 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.http.server.HttpServerRequest;
 import cn.hutool.http.server.HttpServerResponse;
 import cn.hutool.http.server.SimpleServer;
-import cn.hutool.http.server.filter.HttpFilter;
 import cn.hutool.log.Log;
 import com.emby.action.BaseAction;
 import com.emby.action.RootAction;
 import com.emby.annotation.Path;
 import com.emby.entity.Config;
 import com.emby.entity.Result;
-import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
