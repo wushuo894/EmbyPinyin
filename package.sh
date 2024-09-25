@@ -8,4 +8,3 @@ pnpm run build
 cp -r dist/* ../src/main/resources/dist
 cd ..
 mvn -B package -DskipTests  --file pom.xml
-cp target/EmbyPinyin-jar-with-dependencies.jar.jar ./
