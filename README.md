@@ -7,6 +7,8 @@
 
 Emby 支持拼音首字母排序
 
+![Xnip2024-09-25_13-29-32.jpg](https://raw.githubusercontent.com/wushuo894/EmbyPinyin/master/images/Xnip2024-09-25_13-29-32.jpg)
+
 ## Docker部署
 
     docker run -d \
