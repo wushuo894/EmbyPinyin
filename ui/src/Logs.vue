@@ -123,11 +123,6 @@ defineExpose({show})
 </script>
 
 <style>
-@media (min-width: 1000px) {
-  .auto {
-    display: flex;
-  }
-}
 @media (min-width: 1400px) {
   .logs-dialog {
     width: 1000px;

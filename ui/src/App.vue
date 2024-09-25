@@ -1,17 +1,25 @@
 <template>
-  <Config ref="configRef"/>
+  <Config ref="configRef" @call-back="getViews"/>
   <Logs ref="logsRef"/>
   <el-card style="width: 900px;">
     <div>
-      <div style="display: flex;justify-content: space-between;width: 100%;padding-bottom: 12px;">
-        <div v-loading="cronLoading">
-          <el-button bg text :disabled="!selectViews.length" @click="start" icon="Promotion" type="primary">开始</el-button>
-          <el-button bg text :disabled="!selectViews.filter(it => it.cron).length" @click="cron(false)" icon="Minus">取消定时任务
+      <div class="auto" style="justify-content: space-between;width: 100%;padding-bottom: 12px;">
+        <div v-loading="cronLoading" class="auto">
+          <el-button bg text :disabled="!selectViews.length" @click="start" icon="Promotion" type="primary">开始
           </el-button>
-          <el-button bg text :disabled="!selectViews.filter(it => !it.cron).length" @click="cron(true)" icon="Plus">设置定时任务
-          </el-button>
+          <el-button bg text icon="RefreshRight" @click="getViews">刷新</el-button>
+          <div style="margin: 6px;"></div>
+          <div>
+            <el-button bg text :disabled="!selectViews.filter(it => it.cron).length" @click="cron(false)" icon="Minus">
+              取消定时任务
+            </el-button>
+            <el-button bg text :disabled="!selectViews.filter(it => !it.cron).length" @click="cron(true)" icon="Plus">
+              设置定时任务
+            </el-button>
+          </div>
         </div>
-        <div>
+        <div class="auto">
+          <div style="margin: 6px;"></div>
           <el-button bg text @click="logsRef?.show" icon="Tickets">日志</el-button>
           <el-button bg text @click="configRef?.show" icon="Operation">设置</el-button>
         </div>
@@ -34,7 +42,8 @@
             {{ status.current }} / {{ status.total }}
           </el-text>
         </div>
-        <el-progress :percentage="progress" :indeterminate="status.loading" :status="progress === 100 ? 'success':''"/>
+        <el-progress :percentage="progress" :indeterminate="status.loading"
+                     :status="progress === 100 ? 'success':''"/>
       </div>
     </div>
   </el-card>
@@ -54,11 +63,16 @@ const views = ref([])
 const configRef = ref()
 const logsRef = ref()
 const selectViews = ref([])
+const getViewsLoading = ref(false)
 
 let getViews = () => {
+  getViewsLoading.value = true
   api.get('/api/views')
       .then(res => {
         views.value = res.data
+      })
+      .finally(() => {
+        getViewsLoading.value = false
       })
 }
 

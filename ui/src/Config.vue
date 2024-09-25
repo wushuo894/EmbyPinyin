@@ -1,5 +1,6 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="设置" center v-if="dialogVisible" v-loading="loading" style="max-width: 800px">
+  <el-dialog v-model="dialogVisible" title="设置" center v-if="dialogVisible" v-loading="loading"
+             style="max-width: 800px">
     <el-form label-width="auto">
       <el-form-item label="Host">
         <el-input v-model:model-value="config.host" placeholder="http://192.168.1.x:8096"/>
@@ -57,6 +58,7 @@ let ok = () => {
       .then(res => {
         ElMessage.success(res.message)
         dialogVisible.value = false
+        emit('call-back')
       })
       .finally(() => {
         okLoading.value = false
@@ -66,5 +68,7 @@ let ok = () => {
 defineExpose({
   show
 })
+
+const emit = defineEmits(['call-back'])
 
 </script>

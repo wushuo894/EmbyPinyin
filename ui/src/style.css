@@ -33,3 +33,9 @@ body, html, #app {
         --el-dialog-width: 800px;
     }
 }
+
+@media (min-width: 1000px) {
+    .auto {
+        display: flex;
+    }
+}
