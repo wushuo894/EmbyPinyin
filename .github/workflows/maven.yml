@@ -28,9 +28,9 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: |
+        bash ./package.sh
         version=$(cat pom.xml | grep -oPm1 '(?<=<version>).*?(?=</version>)')
         echo "version=v$version" >> $GITHUB_ENV
-        mvn -B package --file pom.xml -T 1C
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
