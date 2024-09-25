@@ -41,7 +41,7 @@ const config = ref({
 let show = () => {
   dialogVisible.value = true
   loading.value = true
-  api.get('/api/config')
+  api.get('api/config')
       .then(res => {
         config.value = res.data
       })
@@ -54,7 +54,7 @@ let okLoading = ref(false)
 
 let ok = () => {
   okLoading.value = true
-  api.post('/api/config', config.value)
+  api.post('api/config', config.value)
       .then(res => {
         ElMessage.success(res.message)
         dialogVisible.value = false

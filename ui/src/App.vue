@@ -67,7 +67,7 @@ const getViewsLoading = ref(false)
 
 let getViews = () => {
   getViewsLoading.value = true
-  api.get('/api/views')
+  api.get('api/views')
       .then(res => {
         views.value = res.data
       })
@@ -84,7 +84,7 @@ let startLoading = ref(false)
 
 let start = () => {
   startLoading.value = true
-  api.post('/api/pinyin', selectViews.value)
+  api.post('api/pinyin', selectViews.value)
       .then(res => {
         ElMessage.success(res.message)
       })
@@ -109,9 +109,9 @@ let cron = (add) => {
 }
 
 let setCron = async (ids) => {
-  let res = await api.get('/api/config')
+  let res = await api.get('api/config')
   res.data.cronIds = ids
-  res = await api.post('/api/config', res.data)
+  res = await api.post('api/config', res.data)
   ElMessage.success(res.message)
 }
 
@@ -129,7 +129,7 @@ onMounted(() => {
   getViews()
   setInterval(() => {
     try {
-      api.get('/api/status')
+      api.get('api/status')
           .then(res => {
             status.value = res.data
             let {current, total, loading} = status.value
