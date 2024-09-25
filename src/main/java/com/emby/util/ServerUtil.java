@@ -45,6 +45,30 @@ public class ServerUtil {
 
         server = HttpUtil.createServer(Integer.parseInt(PORT));
 
+        server.addFilter((req, res, chain) -> {
+            REQUEST.set(req);
+            RESPONSE.set(res);
+            Config config = ConfigUtil.CONFIG;
+            Boolean isInnerIP = config.getIsInnerIP();
+            try {
+                String ip = getIp();
+                if (isInnerIP) {
+                    if (!PatternPool.IPV4.matcher(ip).matches()) {
+                        res.send404("404 Not Found");
+                        return;
+                    }
+                    if (!Ipv4Util.isInnerIP(ip)) {
+                        res.send404("404 Not Found");
+                        return;
+                    }
+                }
+                chain.doFilter(req.getHttpExchange());
+            } finally {
+                REQUEST.remove();
+                RESPONSE.remove();
+            }
+        });
+
         server.addAction("/", new RootAction());
         Set<Class<?>> classes = ClassUtil.scanPackage("com.emby.action");
         for (Class<?> aClass : classes) {
@@ -54,29 +78,6 @@ public class ServerUtil {
             }
             Object action = ReflectUtil.newInstanceIfPossible(aClass);
             String urlPath = "/api" + path.value();
-            server.addFilter((req, res, chain) -> {
-                REQUEST.set(req);
-                RESPONSE.set(res);
-                Config config = ConfigUtil.CONFIG;
-                Boolean isInnerIP = config.getIsInnerIP();
-                try {
-                    String ip = getIp();
-                    if (isInnerIP) {
-                        if (!PatternPool.IPV4.matcher(ip).matches()) {
-                            res.send404("404 Not Found");
-                            return;
-                        }
-                        if (!Ipv4Util.isInnerIP(ip)) {
-                            res.send404("404 Not Found");
-                            return;
-                        }
-                    }
-                    chain.doFilter(req.getHttpExchange());
-                } finally {
-                    REQUEST.remove();
-                    RESPONSE.remove();
-                }
-            });
             server.addAction(urlPath, new BaseAction() {
                 private final Log log = Log.get(aClass);
 
