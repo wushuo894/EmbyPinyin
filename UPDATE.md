@@ -1,1 +1,1 @@
-支持web页面
+支持windows
