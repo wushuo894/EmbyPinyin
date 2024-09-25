@@ -25,7 +25,6 @@ jobs:
     - name: Build with Maven
       run: |
         bash ./package.sh
-        bash ./package-win.sh
         version=$(cat pom.xml | grep -oPm1 '(?<=<version>).*?(?=</version>)')
         echo "version=v$version" >> $GITHUB_ENV
     - name: Release
@@ -38,8 +37,6 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         files: |
           ./target/emby-pinyin-jar-with-dependencies.jar
-          ./target/emby-pinyin-launcher.exe
-          ./emby-pinyin.win.x86_64.zip
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
@@ -56,11 +53,4 @@ jobs:
         file: ./Dockerfile.tpl
         platforms: linux/amd64,linux/arm64
         push: true
-        tags: wushuo894/emby-pinyin:latest,wushuo894/emby-pinyin:${{ env.version }}
-    - name: DockerHub Description
-      uses: peter-evans/dockerhub-description@v4.0.0
-      env:
-        DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        DOCKERHUB_REPOSITORY: wushuo894/emby-pinyin
-        README_FILEPATH: ./README.md
+        tags: wushuo894/emby-pinyin:test,wushuo894/emby-pinyin:test-${{ env.version }}
