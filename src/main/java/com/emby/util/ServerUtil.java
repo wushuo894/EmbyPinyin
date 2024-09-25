@@ -54,11 +54,12 @@ public class ServerUtil {
             }
             Object action = ReflectUtil.newInstanceIfPossible(aClass);
             String urlPath = "/api" + path.value();
-            server.addFilter(new HttpFilter() {
-                @Override
-                public void doFilter(HttpServerRequest req, HttpServerResponse res, Filter.Chain chain) throws IOException {
-                    Config config = ConfigUtil.CONFIG;
-                    Boolean isInnerIP = config.getIsInnerIP();
+            server.addFilter((req, res, chain) -> {
+                REQUEST.set(req);
+                RESPONSE.set(res);
+                Config config = ConfigUtil.CONFIG;
+                Boolean isInnerIP = config.getIsInnerIP();
+                try {
                     String ip = getIp();
                     if (isInnerIP) {
                         if (!PatternPool.IPV4.matcher(ip).matches()) {
@@ -71,6 +72,9 @@ public class ServerUtil {
                         }
                     }
                     chain.doFilter(req.getHttpExchange());
+                } finally {
+                    REQUEST.remove();
+                    RESPONSE.remove();
                 }
             });
             server.addAction(urlPath, new BaseAction() {
@@ -79,8 +83,6 @@ public class ServerUtil {
                 @Override
                 public void doAction(HttpServerRequest req, HttpServerResponse res) {
                     try {
-                        REQUEST.set(req);
-                        RESPONSE.set(res);
                         BaseAction baseAction = (BaseAction) action;
                         baseAction.doAction(req, res);
                     } catch (Exception e) {
@@ -91,9 +93,6 @@ public class ServerUtil {
                             log.error("{} {}", urlPath, e.getMessage());
                             log.debug(e);
                         }
-                    } finally {
-                        REQUEST.remove();
-                        RESPONSE.remove();
                     }
                 }
             });
