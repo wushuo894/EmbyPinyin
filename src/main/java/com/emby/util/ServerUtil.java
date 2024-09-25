@@ -66,7 +66,7 @@ public class ServerUtil {
                             res.send404("404 Not Found");
                             return;
                         }
-                        if (Ipv4Util.isInnerIP(ip)) {
+                        if (!Ipv4Util.isInnerIP(ip)) {
                             res.send404("404 Not Found");
                             return;
                         }
