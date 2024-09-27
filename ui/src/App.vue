@@ -101,20 +101,24 @@ let cron = (add) => {
     valueElement.cron = add
   }
   let cronIds = selectViews.value.filter(it => it['cron']).map(it => it['id'])
-  setCron(cronIds)
+  setCron(cronIds, add)
       .finally(() => {
         cronLoading.value = false
         getViews()
       })
 }
 
-let setCron = async (ids) => {
+let setCron = async (ids, add) => {
   let res = await api.get('api/config')
-  res.data.cronIds = ids
+  if (add) {
+    ids = [...new Set([...res.data['cronIds'], ...ids])];
+  } else {
+    ids = res.data['cronIds'].filter(id => ids.includes(id) === -1)
+  }
+  res.data['cronIds'] = ids
   res = await api.post('api/config', res.data)
   ElMessage.success(res.message)
 }
-
 
 let status = ref({
   'total': 0,
