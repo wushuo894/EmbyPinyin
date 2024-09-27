@@ -100,7 +100,7 @@ let cron = (add) => {
   for (let valueElement of selectViews.value) {
     valueElement.cron = add
   }
-  let cronIds = selectViews.value.filter(it => it['cron']).map(it => it['id'])
+  let cronIds = selectViews.value.map(it => it['id'])
   setCron(cronIds, add)
       .finally(() => {
         cronLoading.value = false
@@ -113,8 +113,9 @@ let setCron = async (ids, add) => {
   if (add) {
     ids = [...new Set([...res.data['cronIds'], ...ids])];
   } else {
-    ids = res.data['cronIds'].filter(id => ids.includes(id) === -1)
+    ids = res.data['cronIds'].filter(id => !ids.includes(id))
   }
+  console.log(ids);
   res.data['cronIds'] = ids
   res = await api.post('api/config', res.data)
   ElMessage.success(res.message)
