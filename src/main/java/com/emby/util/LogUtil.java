@@ -78,8 +78,12 @@ public class LogUtil {
                             }
 
                         }
-                        LOGS.add(new Log().setMessage(log.toString()).setLevel(level).setLoggerName(loggerName));
                     } catch (Exception ignored) {
+
+                    }
+                    try{
+                        LOGS.add(new Log().setMessage(log.toString()).setLevel(level).setLoggerName(loggerName));
+                    }catch (Exception ignored){
 
                     }
                     return FilterReply.NEUTRAL;
