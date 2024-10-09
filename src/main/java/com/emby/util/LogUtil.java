@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.filter.AbstractMatcherFilter;
 import ch.qos.logback.core.spi.FilterReply;
@@ -24,6 +26,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class LogUtil {
@@ -62,8 +65,23 @@ public class LogUtil {
                     String level = event.getLevel().toString();
                     String loggerName = event.getLoggerName();
                     String formattedMessage = event.getFormattedMessage();
-                    String log = StrFormatter.format("{} {} {} - {}", date, level, loggerName, formattedMessage);
-                    LOGS.add(new Log().setMessage(log).setLevel(level).setLoggerName(loggerName));
+                    StringBuilder log = new StringBuilder(StrFormatter.format("{} {} {} - {}", date, level, loggerName, formattedMessage));
+                    IThrowableProxy throwableProxy = event.getThrowableProxy();
+                    try {
+                        if (Objects.nonNull(throwableProxy)) {
+                            String className = throwableProxy.getClassName();
+                            String message = throwableProxy.getMessage();
+                            log.append(StrFormatter.format("\r\n{}: {}", className, message));
+                            StackTraceElementProxy[] stackTraceElementProxyArray = throwableProxy.getStackTraceElementProxyArray();
+                            for (StackTraceElementProxy stackTraceElementProxy : stackTraceElementProxyArray) {
+                                log.append("\r\n\t").append(stackTraceElementProxy.toString());
+                            }
+
+                        }
+                        LOGS.add(new Log().setMessage(log.toString()).setLevel(level).setLoggerName(loggerName));
+                    } catch (Exception ignored) {
+
+                    }
                     return FilterReply.NEUTRAL;
                 }
             });
