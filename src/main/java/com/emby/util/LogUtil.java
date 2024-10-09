@@ -23,15 +23,15 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
 public class LogUtil {
 
-    public static final List<Log> LOGS = Collections.synchronizedList(new FixedSizeLinkedList<>(4096));
+    public static final List<Log> LOGS = new CopyOnWriteArrayList<>(new FixedSizeLinkedList<>(4096));
 
     public static void loadLogback() {
         Config config = ConfigUtil.CONFIG;
@@ -81,9 +81,9 @@ public class LogUtil {
                     } catch (Exception ignored) {
 
                     }
-                    try{
+                    try {
                         LOGS.add(new Log().setMessage(log.toString()).setLevel(level).setLoggerName(loggerName));
-                    }catch (Exception ignored){
+                    } catch (Exception ignored) {
 
                     }
                     return FilterReply.NEUTRAL;
