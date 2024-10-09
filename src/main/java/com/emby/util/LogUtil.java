@@ -33,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class LogUtil {
 
     public static final List<Log> LOGS = new CopyOnWriteArrayList<>(
-            Collections.synchronizedList(new FixedSizeLinkedList<>(4096))
+            new FixedSizeLinkedList<>(4096)
     );
 
     public static void loadLogback() {
