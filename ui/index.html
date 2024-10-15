@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EmbyPinyin</title>
   </head>
+  <script>
+      if (!location.pathname.endsWith('/') && !location.href.endsWith('#')) {
+          location.href = location.href + '/'
+      }
+  </script>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
