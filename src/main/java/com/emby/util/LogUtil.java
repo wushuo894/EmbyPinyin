@@ -17,6 +17,7 @@ import cn.hutool.core.text.StrFormatter;
 import com.emby.entity.Config;
 import com.emby.entity.Log;
 import com.emby.list.FixedSizeLinkedList;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
 
 @Slf4j
 public class LogUtil {
@@ -67,33 +69,41 @@ public class LogUtil {
                     String formattedMessage = event.getFormattedMessage();
                     StringBuilder log = new StringBuilder(StrFormatter.format("{} {} {} - {}", date, level, loggerName, formattedMessage));
                     IThrowableProxy throwableProxy = event.getThrowableProxy();
-                    try {
-                        if (Objects.nonNull(throwableProxy)) {
-                            String className = throwableProxy.getClassName();
-                            String message = throwableProxy.getMessage();
-                            log.append(StrFormatter.format("\r\n{}: {}", className, message));
-                            StackTraceElementProxy[] stackTraceElementProxyArray = throwableProxy.getStackTraceElementProxyArray();
-                            for (StackTraceElementProxy stackTraceElementProxy : stackTraceElementProxyArray) {
-                                log.append("\r\n\t").append(stackTraceElementProxy.toString());
-                            }
-
-                        }
-                    } catch (Exception ignored) {
-
-                    }
+                    addThrowableMsg(log, throwableProxy);
                     try {
                         LOGS.add(new Log().setMessage(log.toString()).setLevel(level).setLoggerName(loggerName));
                     } catch (Exception ignored) {
-
                     }
                     return FilterReply.NEUTRAL;
                 }
             });
         } catch (Exception e) {
-            log.error(e.getMessage());
-            log.debug(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         } finally {
             IoUtil.close(byteArrayInputStream);
         }
     }
+
+    @SneakyThrows
+    public static void addThrowableMsg(StringBuilder log, IThrowableProxy throwableProxy) {
+        if (Objects.isNull(throwableProxy)) {
+            return;
+        }
+        String className = throwableProxy.getClassName();
+        String message = throwableProxy.getMessage();
+        log.append(StrFormatter.format("\r\n{}: {}", className, message));
+        StackTraceElementProxy[] stackTraceElementProxyArray = throwableProxy.getStackTraceElementProxyArray();
+        if (Objects.isNull(stackTraceElementProxyArray)) {
+            return;
+        }
+        for (StackTraceElementProxy stackTraceElementProxy : stackTraceElementProxyArray) {
+            log.append("\r\n\t").append(stackTraceElementProxy.toString());
+        }
+        IThrowableProxy cause = throwableProxy.getCause();
+        if (Objects.isNull(cause)) {
+            return;
+        }
+        addThrowableMsg(log, cause);
+    }
 }
+

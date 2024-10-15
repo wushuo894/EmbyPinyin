@@ -30,6 +30,7 @@ public class PinyinTask implements Runnable {
         status.setCurrent(0L)
                 .setTotal(0L);
         LOCK.lock();
+        log.info("定时任务正在进行。。。");
         try {
             List<JsonElement> items = new ArrayList<>();
             status.setLoading(true);
@@ -44,10 +45,10 @@ public class PinyinTask implements Runnable {
                 EmbyUtil.pinyin(jsonElement.getAsJsonObject());
             }
             status.setStart(false);
-            log.info("已结束");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         } finally {
+            log.info("定时任务已结束");
             LOCK.unlock();
             status
                     .setStart(false)
