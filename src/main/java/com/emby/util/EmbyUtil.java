@@ -93,7 +93,7 @@ public class EmbyUtil {
                     }
                     String name = body.get("Name").getAsString();
                     String pinyin = PinyinUtil.getPinyin(name);
-                    log.info("name: {} , pinyin: {}", name, pinyin);
+                    log.debug("name: {} , pinyin: {}", name, pinyin);
                     body.addProperty("SortName", pinyin);
                     body.addProperty("ForcedSortName", pinyin);
                     JsonArray lockedFields = body.get("LockedFields").getAsJsonArray();

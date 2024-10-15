@@ -43,4 +43,4 @@ jobs:
         file: ./Dockerfile.tpl
         platforms: linux/amd64,linux/arm64
         push: true
-        tags: wushuo894/emby-pinyin:test,wushuo894/emby-pinyin:test-${{ env.version }}
+        tags: wushuo894/emby-pinyin:test
