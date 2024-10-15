@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Setter
@@ -30,7 +31,10 @@ public class PinyinTask implements Runnable {
         status.setCurrent(0L)
                 .setTotal(0L);
         LOCK.lock();
-        log.info("定时任务正在进行。。。");
+        String s = viewsList.stream()
+                .map(Views::getName)
+                .collect(Collectors.joining(", "));
+        log.info(s);
         try {
             List<JsonElement> items = new ArrayList<>();
             status.setLoading(true);
@@ -48,7 +52,6 @@ public class PinyinTask implements Runnable {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         } finally {
-            log.info("定时任务已结束");
             LOCK.unlock();
             status
                     .setStart(false)

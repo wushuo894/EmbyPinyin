@@ -25,7 +25,12 @@ public class PinyinAction implements BaseAction {
         List<Views> viewsList = getBody(JsonArray.class).asList().stream().map(o -> gson.fromJson(o, Views.class)).toList();
         PinyinTask pinyinTask = new PinyinTask();
         pinyinTask.setViewsList(viewsList);
-        ThreadUtil.execute(pinyinTask);
+
+        ThreadUtil.execute(() -> {
+            log.info("任务已开始");
+            pinyinTask.run();
+            log.info("任务已结束");
+        });
         resultSuccessMsg("任务已开始");
     }
 }
