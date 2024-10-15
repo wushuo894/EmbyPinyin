@@ -18,6 +18,9 @@
       <el-form-item label="Debug">
         <el-switch v-model:model-value="config.debug"/>
       </el-form-item>
+      <el-form-item label="版本">
+        {{ version }}
+      </el-form-item>
     </el-form>
     <div style="width: 100%;justify-content: end;display: flex;">
       <el-button bg text @click="ok" :loading="okLoading" icon="Check">确定</el-button>
@@ -41,6 +44,7 @@ const config = ref({
   'cronStr': '',
   'isInnerIP': false
 })
+const version = ref("None")
 
 let show = () => {
   dialogVisible.value = true
@@ -51,6 +55,10 @@ let show = () => {
       })
       .finally(() => {
         loading.value = false
+      })
+  api.get('api/version')
+      .then(res => {
+        version.value = res.data
       })
 }
 
