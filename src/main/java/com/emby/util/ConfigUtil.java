@@ -86,22 +86,21 @@ public class ConfigUtil {
             SCHEDULER.stop(true);
         }
         try {
-            SCHEDULER.schedule(cronStr, new Runnable() {
-                @Override
-                public void run() {
-                    List<String> cronIds = CONFIG.getCronIds();
-                    EmbyUtil.getAdmin();
-                    if (StrUtil.isBlank(EmbyUtil.ADMIN_USER_ID)) {
-                        return;
-                    }
-                    List<Views> views = EmbyUtil.getViews();
-                    views = views.stream().filter(it -> cronIds.contains(it.getId())).toList();
-                    PinyinTask pinyinTask = new PinyinTask();
-                    pinyinTask.setViewsList(views);
-                    log.info("定时任务正在进行。。。");
-                    ThreadUtil.execute(pinyinTask);
-                    log.info("定时任务已结束");
+            SCHEDULER.schedule(cronStr, (Runnable) () -> {
+                List<String> cronIds = CONFIG.getCronIds();
+                EmbyUtil.getAdmin();
+                if (StrUtil.isBlank(EmbyUtil.ADMIN_USER_ID)) {
+                    return;
                 }
+                List<Views> views = EmbyUtil.getViews();
+                views = views.stream().filter(it -> cronIds.contains(it.getId())).toList();
+                PinyinTask pinyinTask = new PinyinTask();
+                pinyinTask.setViewsList(views);
+                ThreadUtil.execute(() -> {
+                    log.info("定时任务正在进行。。。");
+                    pinyinTask.run();
+                    log.info("定时任务已结束");
+                });
             });
             SCHEDULER.start();
             log.info("定时任务已开启 {}", cronStr);
