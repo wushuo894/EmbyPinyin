@@ -9,13 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 public class Main {
     public static void main(String[] args) {
         try {
-            String version = MavenUtil.getVersion();
-            log.info("version {}", version);
             ConfigUtil.load();
             ServerUtil
                     .create(args)
                     .start();
-
+            String version = MavenUtil.getVersion();
+            log.info("version {}", version);
             Runtime.getRuntime()
                     .addShutdownHook(new Thread(ServerUtil::stop));
         } catch (Exception e) {
