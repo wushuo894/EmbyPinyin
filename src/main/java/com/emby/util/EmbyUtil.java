@@ -97,6 +97,8 @@ public class EmbyUtil {
                     body.addProperty("SortName", pinyin);
                     body.addProperty("ForcedSortName", pinyin);
                     JsonArray lockedFields = body.get("LockedFields").getAsJsonArray();
+                    lockedFields.asList()
+                            .clear();
                     lockedFields.add("SortName");
                     return body;
                 });
