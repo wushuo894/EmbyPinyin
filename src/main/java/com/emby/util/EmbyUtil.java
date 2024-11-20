@@ -1,7 +1,6 @@
 package com.emby.util;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
@@ -9,6 +8,7 @@ import com.emby.action.StatusAction;
 import com.emby.entity.Config;
 import com.emby.entity.Status;
 import com.emby.entity.Views;
+import com.github.promeg.pinyinhelper.Pinyin;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -92,7 +92,7 @@ public class EmbyUtil {
                         throw new RuntimeException("JSON解析失败");
                     }
                     String name = body.get("Name").getAsString();
-                    String pinyin = PinyinUtil.getPinyin(name);
+                    String pinyin = Pinyin.toPinyin(name, " ").toLowerCase();
                     log.debug("name: {} , pinyin: {}", name, pinyin);
                     body.addProperty("SortName", pinyin);
                     body.addProperty("ForcedSortName", pinyin);
