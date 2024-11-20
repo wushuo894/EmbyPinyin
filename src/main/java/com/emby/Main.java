@@ -19,6 +19,7 @@ public class Main {
         map.put("重回", new String[]{"chong", "hui"});
         map.put("重生", new String[]{"chong", "sheng"});
         map.put("重来", new String[]{"chong", "lai"});
+        map.put("调教", new String[]{"tiao", "jiao"});
 
         Pinyin.init(Pinyin.newConfig()
                 .with(new PinyinMapDict() {
