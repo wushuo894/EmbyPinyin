@@ -8,10 +8,10 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${config}logs/ani-rss.log</file>
+        <file>${config}logs/emby-pinyin.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 每天滚动生成日志文件 -->
-            <fileNamePattern>${config}logs/ani-rss-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${config}logs/emby-pinyin-%d{yyyy-MM-dd}.log</fileNamePattern>
             <!-- 保留7天的日志 -->
             <maxHistory>7</maxHistory>
         </rollingPolicy>
