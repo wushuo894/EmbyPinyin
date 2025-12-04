@@ -6,6 +6,7 @@ import cn.hutool.http.server.HttpServerResponse;
 import com.emby.annotation.Path;
 import com.emby.entity.Log;
 import com.emby.util.LogUtil;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -14,16 +15,18 @@ import java.util.List;
 @Path("/logs")
 public class LogsAction implements BaseAction {
 
+    private static final List<Log> LOGS = LogUtil.LOGS;
+
     @Override
+    @Synchronized("LOGS")
     public void doAction(HttpServerRequest req, HttpServerResponse res) {
         String method = req.getMethod();
-        List<Log> logs = LogUtil.LOGS;
         if (Method.DELETE.name().equals(method)) {
-            logs.clear();
+            LOGS.clear();
             log.info("清理日志");
             resultSuccess();
             return;
         }
-        resultSuccess(logs);
+        resultSuccess(LOGS);
     }
 }
