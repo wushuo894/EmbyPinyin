@@ -34,7 +34,12 @@
         <el-table-column type="selection" width="55"/>
         <el-table-column label="id" prop="id" width="180"/>
         <el-table-column label="媒体库名称" prop="name"/>
-        <el-table-column label="定时任务" prop="cron"/>
+        <el-table-column label="定时任务">
+          <template #default="it">
+            <el-tag type="primary" v-if="views[it.$index].cron">已启用</el-tag>
+            <el-tag type="info" v-else>未启用</el-tag>
+          </template>
+        </el-table-column>
       </el-table>
       <div style="margin-top: 16px">
         <div>

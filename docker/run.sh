@@ -11,7 +11,7 @@ sigterm_handler() {
 
 trap 'sigterm_handler' SIGTERM
 
-java -Xms60m -Xmx1g -Xss256k \
+java -Xms60m -Xmx512m -Xss256k \
       -Xgcpolicy:gencon \
       -Xshareclasses:none \
       -Xquickstart -Xcompressedrefs \
