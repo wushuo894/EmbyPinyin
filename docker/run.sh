@@ -4,6 +4,16 @@ path="./"
 jar="emby-pinyin-jar-with-dependencies.jar"
 jar_path=$path$jar
 
+stop() {
+  pid=$(ps -ef | grep java | grep "$jar" | awk '{print $2}')
+  if [ -n "$pid" ]; then
+      echo "Stopping process $pid - $jar"
+      kill "$pid"
+  fi
+}
+
+stop
+
 sigterm_handler() {
     stop
     exit 0
