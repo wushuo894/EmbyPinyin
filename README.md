@@ -19,7 +19,7 @@ Emby 支持拼音首字母排序
     -e CONFIG="/config" \
     -e TZ=Asia/Shanghai \
     --restart always \
-    wushuo894/emby-pinyin
+    ghcr.io/wushuo894/emby-pinyin
 
 | 参数   | 作用  | 默认值           |
 |------|-----|---------------|
