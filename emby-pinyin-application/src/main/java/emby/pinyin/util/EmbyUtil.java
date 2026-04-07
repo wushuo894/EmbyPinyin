@@ -100,7 +100,7 @@ public class EmbyUtil {
                     String sortName = Optional.of(body)
                             .map(it -> it.get("SortName"))
                             .filter(it -> !it.isJsonNull())
-                            .map(String::valueOf)
+                            .map(JsonElement::getAsString)
                             .orElse(name)
                             .toLowerCase()
                             .trim();
