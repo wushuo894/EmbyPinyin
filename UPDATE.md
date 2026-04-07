@@ -1,2 +1,1 @@
-- refactor: 优化页面圆角
-- feat: 支持拼音首字母模式
+- 更新内容详见 <https://github.com/wushuo894/emby-pinyin/pull/5>

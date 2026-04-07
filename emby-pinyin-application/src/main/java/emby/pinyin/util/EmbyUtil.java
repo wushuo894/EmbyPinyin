@@ -1,5 +1,6 @@
 package emby.pinyin.util;
 
+import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -13,11 +14,13 @@ import emby.pinyin.entity.Config;
 import emby.pinyin.entity.Status;
 import emby.pinyin.entity.Views;
 import emby.pinyin.enums.PinyinMode;
+import emby.pinyin.fun.BaseSortName;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 public class EmbyUtil {
@@ -94,52 +97,32 @@ public class EmbyUtil {
                     String name = body.get("Name").getAsString();
 
                     // 优先从排序标题判断 #lock（更符合实际用途）
-                    String sortName = body.has("SortName") && !body.get("SortName").isJsonNull()
-                            ? body.get("SortName").getAsString()
-                            : "";
-
-                    String checkTarget = StrUtil.isNotBlank(sortName) ? sortName : name;
-                    String lower = checkTarget.toLowerCase().trim();
+                    String sortName = Optional.of(body)
+                            .map(it -> it.get("SortName"))
+                            .filter(it -> !it.isJsonNull())
+                            .map(String::valueOf)
+                            .orElse(name)
+                            .toLowerCase()
+                            .trim();
 
                     // 跳过带有 #lock 标记的项目（支持 xxx#lock 和 xxx #lock）
-                    if (lower.endsWith("#lock")) {
-                        log.debug("skip (locked): {}", checkTarget);
+                    if (sortName.endsWith("#lock")) {
+                        log.debug("skip (locked): {}", sortName);
                         return body;
                     }
 
-                    String pinyin = "";
-
                     PinyinMode pinyinMode = config.getPinyinMode();
+                    Class<? extends BaseSortName> aClass = pinyinMode.getAClass();
+                    BaseSortName baseSortName = ReflectUtil.newInstance(aClass);
 
-                    // 根据不同模式生成排序字段（SortName）
-                    if (pinyinMode == PinyinMode.PINYIN) {
-                        // 模式1：全拼，例如 "世界" → "shijie"
-                        pinyin = PinyinUtils.getPinyin(name, " ").toLowerCase();
+                    sortName = baseSortName.getSortName(name);
 
-                    } else if (pinyinMode == PinyinMode.FIRST_LETTER) {
-                        // 模式2：首字母，例如 "世界" → "sj"
-                        pinyin = PinyinUtils.getFirstLetter(name, " ").toLowerCase();
+                    log.debug("name: {} , sortName: {}", name, sortName);
 
-                    } else if (pinyinMode == PinyinMode.PREFIX) {
-                        // 模式3：前置字母，例如 "世界" → "s_世界"
-                        String first = PinyinUtils.getFirstLetter(name, "");
-                        String initial = (first != null && first.length() > 0)
-                                ? first.substring(0, 1).toLowerCase()
-                                : "";
-                        pinyin = initial + "_" + name;
-
-                    } else if (pinyinMode == PinyinMode.DEFAULT) {
-                        // 模式4：Emby默认
-                        // 这里不再删除字段，而是直接使用原始名称作为排序
-                        pinyin = name;
-                    }
-
-                    log.debug("name: {} , pinyin: {}", name, pinyin);
-
-                    if (StrUtil.isNotBlank(pinyin)) {
+                    if (StrUtil.isNotBlank(sortName)) {
                         // 统一写入排序字段（所有模式都会写入并锁定）
-                        body.addProperty("SortName", pinyin);
-                        body.addProperty("ForcedSortName", pinyin);
+                        body.addProperty("SortName", sortName);
+                        body.addProperty("ForcedSortName", sortName);
 
                         // 锁定排序字段，防止被 Emby 或其他工具覆盖
                         JsonArray lockedFields = body.get("LockedFields").getAsJsonArray();

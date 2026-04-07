@@ -16,10 +16,10 @@
     "unplugin-auto-import": "^21.0.0",
     "unplugin-vue-components": "^32.0.0",
     "vite-plugin-compression": "^0.5.1",
-    "vue": "^3.5.30"
+    "vue": "^3.5.32"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.5",
-    "vite": "^8.0.2"
+    "vite": "^8.0.5"
   }
 }

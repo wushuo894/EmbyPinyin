@@ -1,8 +1,16 @@
 package emby.pinyin.enums;
 
+import emby.pinyin.fun.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
 public enum PinyinMode {
-    PINYIN,         // 全拼，例如 "世界" → "shijie"
-    FIRST_LETTER,   // 首字母，例如 "世界" → "sj"
-    PREFIX,         // 前置字母，例如 "世界" → "s_世界"
-    DEFAULT         // Emby默认，例如 "世界" → "世界"（使用原始名称并锁定）
+    PINYIN(PinyinSortName.class),
+    FIRST_LETTER(FirstLetterSortName.class),
+    PREFIX(PrefixSortName.class),
+    DEFAULT(DefaultSortName.class);
+
+    @Getter
+    private final Class<? extends BaseSortName> aClass;
 }

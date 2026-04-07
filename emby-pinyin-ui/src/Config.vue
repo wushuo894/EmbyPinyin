@@ -14,8 +14,10 @@
       </el-form-item>
       <el-form-item label="PinyinMode">
         <el-select v-model="config.pinyinMode">
-          <el-option value="PINYIN" label="PINYIN"/>
-          <el-option value="FIRST_LETTER" label="FIRST_LETTER"/>
+          <el-option value="PINYIN" label="全拼"/>
+          <el-option value="FIRST_LETTER" label="首字母"/>
+          <el-option value="PREFIX" label="前置字母"/>
+          <el-option value="DEFAULT" label="默认"/>
         </el-select>
       </el-form-item>
       <el-form-item label="禁止公网访问">
